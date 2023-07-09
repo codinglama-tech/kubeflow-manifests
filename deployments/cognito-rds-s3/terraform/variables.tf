@@ -9,6 +9,9 @@ variable "cluster_name" {
   }
 }
 
+variable "aws_terraform_user_access_secret_key" {
+}
+
 variable "cluster_region" {
   description = "Region to create the cluster"
   type        = string

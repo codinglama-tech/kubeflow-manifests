@@ -251,7 +251,6 @@ module "kubeflow_components" {
 
   providers = {
     aws          = aws
-    aws.virginia = aws.virginia
   }
 
 }
