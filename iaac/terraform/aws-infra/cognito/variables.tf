@@ -1,3 +1,6 @@
+variable "aws_terraform_user_access_secret_key" {
+}
+
 variable "cognito_user_pool_name" {
   description = "Cognito User Pool name"
   type        = string

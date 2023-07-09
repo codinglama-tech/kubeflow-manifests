@@ -179,6 +179,7 @@ module "cognito" {
   }
 
   depends_on = [module.subdomain]
+  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
 module "filter_secrets_manager_set_values" {

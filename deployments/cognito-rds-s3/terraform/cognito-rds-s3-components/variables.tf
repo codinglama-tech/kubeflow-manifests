@@ -197,6 +197,7 @@ variable "minio_aws_secret_access_key" {
 variable "cognito_user_pool_name" {
   description = "Cognito User Pool name"
   type        = string
+  default = "cognitouser"
 }
 
 variable "aws_route53_root_zone_name" {

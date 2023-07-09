@@ -1,9 +1,14 @@
-provider "aws" {
-  alias = "aws"
-}
 
 provider "aws" {
-  alias = "virginia"
+  region     = "ap-south-2"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
+}
+provider "aws" {
+  alias = "aws"
+  region     = "ap-south-2"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
 
 # Add a custom domain to the user pool
@@ -35,7 +40,7 @@ resource "aws_acm_certificate" "cognito_domain_cert" {
     create_before_destroy = true
   }
 
-  provider = aws.virginia
+  provider = aws.aws
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acm_certificate_validation
