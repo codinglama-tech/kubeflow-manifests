@@ -10,6 +10,7 @@ variable "cluster_name" {
 }
 
 variable "aws_terraform_user_access_secret_key" {
+  type = string
 }
 
 variable "cluster_region" {

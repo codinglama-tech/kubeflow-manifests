@@ -1,4 +1,5 @@
 variable "aws_terraform_user_access_secret_key" {
+  type = string
 }
 
 variable "kf_helm_repo_path" {

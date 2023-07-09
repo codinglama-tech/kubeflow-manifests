@@ -62,6 +62,8 @@ provider "aws" {
 provider "aws" {
   region = "ap-south-2"
   alias  = "aws"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
 
 provider "kubernetes" {
