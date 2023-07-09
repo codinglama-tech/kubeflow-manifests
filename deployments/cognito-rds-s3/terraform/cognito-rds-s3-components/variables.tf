@@ -1,3 +1,6 @@
+variable "aws_terraform_user_access_secret_key" {
+}
+
 variable "kf_helm_repo_path" {
   description = "Full path to the location of the helm folder to install from for KF 1.6"
   type        = string

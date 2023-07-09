@@ -12,6 +12,7 @@ variable "cluster_name" {
 variable "cluster_region" {
   description = "Region to create the cluster"
   type        = string
+  default     = "ap-south-2"
 }
 
 variable "eks_version" {

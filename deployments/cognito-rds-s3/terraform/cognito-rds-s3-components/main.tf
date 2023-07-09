@@ -1,10 +1,19 @@
-provider "aws" {
-  alias = "aws"
-}
+#provider "aws" {
+#  alias = "aws"
+#}
+#
+#provider "aws" {
+#  alias = "virginia"
+#}
+
 
 provider "aws" {
-  alias = "virginia"
+  alias      = "aws"
+  region     = "ap-south-2"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
+
 
 locals {
   katib_chart_vanilla = "${var.kf_helm_repo_path}/charts/apps/katib/vanilla"
@@ -167,7 +176,6 @@ module "cognito" {
 
   providers = {
     aws          = aws
-    aws.virginia = aws.virginia
   }
 
   depends_on = [module.subdomain]
