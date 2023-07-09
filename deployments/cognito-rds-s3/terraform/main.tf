@@ -52,8 +52,10 @@ locals {
 }
 
 provider "aws" {
-  region = local.region
-}
+  region     = "ap-south-2"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
+  }
 
 # Cognito requires a certificate in N.Virginia in order to have a custom domain for a user pool
 # https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
