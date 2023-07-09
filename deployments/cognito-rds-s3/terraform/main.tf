@@ -257,6 +257,7 @@ module "kubeflow_components" {
     aws          = aws
   }
 
+  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
 #---------------------------------------------------------------
