@@ -1,9 +1,15 @@
+
 provider "aws" {
-  alias = "aws"
+  region = "ap-south-2"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
 
 provider "aws" {
-  alias = "virginia"
+  region = "ap-south-2"
+  alias  = "aws"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
 
 resource "kubernetes_namespace" "kubeflow" {
@@ -33,10 +39,10 @@ module "cognito" {
 
   providers = {
     aws          = aws
-    aws.virginia = aws.virginia
   }
 
   depends_on = [module.subdomain]
+  aws_terraform_user_access_secret_key = var.aws
 }
 
 module "kubeflow_issuer" {

@@ -120,7 +120,8 @@ module "rds" {
   security_group_id              = var.security_group_id
   db_name                        = var.db_name
   db_username                    = var.db_username
-  db_password                    = coalesce(var.db_password, try(random_password.db_password[0].result, null))
+#  db_password                    = coalesce(var.db_password, try(random_password.db_password[0].result, null))
+  db_password                 =
   db_class                       = var.db_class
   db_allocated_storage           = var.db_allocated_storage
   backup_retention_period        = var.backup_retention_period

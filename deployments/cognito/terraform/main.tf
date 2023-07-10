@@ -58,14 +58,14 @@ provider "aws" {
 # Cognito requires a certificate in N.Virginia in order to have a custom domain for a user pool
 # https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
 provider "aws" {
-  region = "us-east-1"
-  alias  = "virginia"
+  region = "ap-south-2"
+  alias  = "aws"
 }
 
 
 provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
+  cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority[0].data)
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
@@ -78,7 +78,7 @@ provider "kubernetes" {
 provider "helm" {
   kubernetes {
     host                   = module.eks_blueprints.eks_cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
+    cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority[0].data)
 
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
@@ -198,9 +198,9 @@ module "kubeflow_components" {
 
   providers = {
     aws          = aws
-    aws.virginia = aws.virginia
   }
 
+  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
 #---------------------------------------------------------------

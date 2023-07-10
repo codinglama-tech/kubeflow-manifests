@@ -88,3 +88,6 @@ variable "notebook_idleness_check_period" {
   type        = string
   default     = 5
 }
+
+variable "aws_terraform_user_access_secret_key" {
+}

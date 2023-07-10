@@ -76,3 +76,6 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "aws_terraform_user_access_secret_key" {
+}
