@@ -53,6 +53,7 @@ output "region" {
   description = "AWS region"
 }
 
+/*
 output "kubelow_platform_domain" {
   value = module.kubeflow_components.kubelow_platform_domain
 }
@@ -66,3 +67,4 @@ output "s3_bucket_name" {
   value       = try(module.kubeflow_components.s3_bucket_name, null)
   description = "The name of the created S3 bucket"
 }
+*/
