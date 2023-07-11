@@ -66,31 +66,6 @@ provider "aws" {
   secret_key = var.aws_terraform_user_access_secret_key
 }
 
-provider "kubernetes" {
-  host                   = module.eks_blueprints.eks_cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-  }
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = module.eks_blueprints.eks_cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-    }
-  }
-}
 
 data "aws_ec2_instance_type_offerings" "availability_zones_cpu" {
   filter {
@@ -130,6 +105,7 @@ module "eks_blueprints" {
   tags = local.tags
 }
 
+/*
 module "eks_blueprints_kubernetes_addons" {
   depends_on = [module.eks_blueprints]
   source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
@@ -192,7 +168,7 @@ module "eks_blueprints_kubernetes_addons" {
   tags = local.tags
 
 }
-
+*/
 # todo: update the blueprints repo code to export the desired values as outputs
 module "eks_blueprints_outputs" {
   source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
@@ -204,7 +180,7 @@ module "eks_blueprints_outputs" {
 
   tags = local.tags
 }
-
+/*
 module "kubeflow_components" {
   depends_on = [module.eks_blueprints]
   source = "./cognito-rds-s3-components"
@@ -261,7 +237,7 @@ module "kubeflow_components" {
 
   aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
-
+*/
 #---------------------------------------------------------------
 # Supporting Resources
 #---------------------------------------------------------------
