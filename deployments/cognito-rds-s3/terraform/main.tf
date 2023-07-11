@@ -120,7 +120,7 @@ data "aws_ec2_instance_type_offerings" "availability_zones_gpu" {
 # EKS Blueprints
 #---------------------------------------------------------------
 module "eks_blueprints" {
-  source = "github.com/codinglama-tech/terraform-aws-eks-blueprints?ref=v4.31.1"
+  source = "github.com/codinglama-tech/terraform-aws-eks-blueprints?ref=fix-aws-auth-dep-nodegroup"
 
   cluster_name    = local.cluster_name
   cluster_version = local.eks_version
