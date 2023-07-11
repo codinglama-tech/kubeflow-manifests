@@ -140,7 +140,7 @@ module "eks_blueprints" {
   tags = local.tags
 }
 
-/*
+
 module "eks_blueprints_kubernetes_addons" {
   depends_on = [module.eks_blueprints]
   source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
@@ -203,8 +203,7 @@ module "eks_blueprints_kubernetes_addons" {
   tags = local.tags
 
 }
-*/
-# todo: update the blueprints repo code to export the desired values as outputs
+
 module "eks_blueprints_outputs" {
   source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
 

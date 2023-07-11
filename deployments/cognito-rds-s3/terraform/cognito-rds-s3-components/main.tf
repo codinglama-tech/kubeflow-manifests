@@ -1,12 +1,3 @@
-#provider "aws" {
-#  alias = "aws"
-#}
-#
-#provider "aws" {
-#  alias = "virginia"
-#}
-
-
 provider "aws" {
   alias      = "aws"
   region     = "ap-south-2"
