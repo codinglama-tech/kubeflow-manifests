@@ -68,7 +68,7 @@ provider "aws" {
 
 provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
-  cluster_ca_certificate = module.eks_blueprints.eks_cluster_certificate_authority_data
+  cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority[0].data)
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
@@ -81,7 +81,7 @@ provider "kubernetes" {
 provider "helm" {
   kubernetes {
     host                   = module.eks_blueprints.eks_cluster_endpoint
-    cluster_ca_certificate = module.eks_blueprints.eks_cluster_certificate_authority_data
+    cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority[0].data)
 
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
