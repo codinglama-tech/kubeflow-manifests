@@ -214,7 +214,7 @@ module "eks_blueprints_outputs" {
 
   tags = local.tags
 }
-/*
+
 module "kubeflow_components" {
   depends_on = [module.eks_blueprints]
   source = "./cognito-rds-s3-components"
@@ -271,7 +271,7 @@ module "kubeflow_components" {
 
   aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
-*/
+
 #---------------------------------------------------------------
 # Supporting Resources
 #---------------------------------------------------------------
