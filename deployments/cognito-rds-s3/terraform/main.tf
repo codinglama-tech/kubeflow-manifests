@@ -131,6 +131,7 @@ module "eks_blueprints" {
 }
 
 module "eks_blueprints_kubernetes_addons" {
+  depends_on = [module.eks_blueprints]
   source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
 
   eks_cluster_id       = module.eks_blueprints.eks_cluster_id
@@ -205,6 +206,7 @@ module "eks_blueprints_outputs" {
 }
 
 module "kubeflow_components" {
+  depends_on = [module.eks_blueprints]
   source = "./cognito-rds-s3-components"
 
   kf_helm_repo_path              = local.kf_helm_repo_path
