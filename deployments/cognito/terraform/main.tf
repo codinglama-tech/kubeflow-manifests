@@ -1,6 +1,7 @@
 locals {
   cluster_name = var.cluster_name
-  region       = var.cluster_region
+#  region       = var.cluster_region
+  region       = "ap-south-1"
   eks_version  = var.eks_version
 
   vpc_cidr = "10.0.0.0/16"
@@ -58,7 +59,7 @@ provider "aws" {
 # Cognito requires a certificate in N.Virginia in order to have a custom domain for a user pool
 # https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
 provider "aws" {
-  region = "ap-south-2"
+  region = "ap-south-1"
   alias  = "aws"
 }
 
@@ -67,12 +68,12 @@ provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
 
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-  }
+#  exec {
+#    api_version = "client.authentication.k8s.io/v1beta1"
+#    command     = "aws"
+#    # This requires the awscli to be installed locally where Terraform is executed
+#    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
+#  }
 }
 
 provider "helm" {
@@ -80,12 +81,12 @@ provider "helm" {
     host                   = module.eks_blueprints.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
 
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-    }
+#    exec {
+#      api_version = "client.authentication.k8s.io/v1beta1"
+#      command     = "aws"
+#      # This requires the awscli to be installed locally where Terraform is executed
+#      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
+#    }
   }
 }
 
