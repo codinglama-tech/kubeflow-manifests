@@ -54,6 +54,7 @@ resource "aws_route53_record" "certificate_validation_cognito_domain" {
 }
 
 resource "aws_acm_certificate_validation" "cognito_domain" {
+  depends_on = [aws_route53_record.certificate_validation_cognito_domain]
   provider                = aws
   certificate_arn         = aws_acm_certificate.cognito_domain_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.certificate_validation_cognito_domain : record.fqdn]

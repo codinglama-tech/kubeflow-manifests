@@ -42,7 +42,7 @@ module "cognito" {
   }
 
   depends_on = [module.subdomain]
-  aws_terraform_user_access_secret_key = var.aws
+  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
 module "kubeflow_issuer" {
