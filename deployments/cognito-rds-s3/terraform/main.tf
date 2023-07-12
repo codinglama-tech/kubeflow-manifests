@@ -215,62 +215,62 @@ module "eks_blueprints_outputs" {
   tags = local.tags
 }
 
-module "kubeflow_components" {
-#  depends_on = [module.eks_blueprints]
-  source = "./cognito-rds-s3-components"
-
-  kf_helm_repo_path              = local.kf_helm_repo_path
-  addon_context                  = module.eks_blueprints_outputs.addon_context
-  enable_aws_telemetry           = var.enable_aws_telemetry
-  notebook_enable_culling        = var.notebook_enable_culling
-  notebook_cull_idle_time        = var.notebook_cull_idle_time
-  notebook_idleness_check_period = var.notebook_idleness_check_period
-
-  # rds
-  use_rds                        = var.use_rds
-  vpc_id                         = module.vpc.vpc_id
-  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
-  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
-  db_name                        = var.db_name
-  db_username                    = var.db_username
-  db_password                    = var.db_password
-  db_class                       = var.db_class
-  mlmdb_name                     = var.mlmdb_name
-  db_allocated_storage           = var.db_allocated_storage
-  mysql_engine_version           = var.mysql_engine_version
-  backup_retention_period        = var.backup_retention_period
-  storage_type                   = var.storage_type
-  deletion_protection            = var.deletion_protection
-  max_allocated_storage          = var.max_allocated_storage
-  publicly_accessible            = var.publicly_accessible
-  multi_az                       = var.multi_az
-  secret_recovery_window_in_days = var.secret_recovery_window_in_days
-  generate_db_password           = var.generate_db_password
-
-  # s3
-  use_s3                        = var.use_s3
-  pipeline_s3_credential_option = var.pipeline_s3_credential_option
-  minio_service_region          = var.minio_service_region
-  force_destroy_s3_bucket       = var.force_destroy_s3_bucket
-  minio_aws_access_key_id       = var.minio_aws_access_key_id
-  minio_aws_secret_access_key   = var.minio_aws_secret_access_key
-
-  # cognito
-  use_cognito                     = var.use_cognito
-  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
-  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
-  create_subdomain                = var.create_subdomain
-  cognito_user_pool_name          = var.cognito_user_pool_name
-  load_balancer_scheme            = var.load_balancer_scheme
-
-  tags = local.tags
-
-  providers = {
-    aws          = aws
-  }
-
-  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
-}
+#module "kubeflow_components" {
+##  depends_on = [module.eks_blueprints]
+#  source = "./cognito-rds-s3-components"
+#
+#  kf_helm_repo_path              = local.kf_helm_repo_path
+#  addon_context                  = module.eks_blueprints_outputs.addon_context
+#  enable_aws_telemetry           = var.enable_aws_telemetry
+#  notebook_enable_culling        = var.notebook_enable_culling
+#  notebook_cull_idle_time        = var.notebook_cull_idle_time
+#  notebook_idleness_check_period = var.notebook_idleness_check_period
+#
+#  # rds
+#  use_rds                        = var.use_rds
+#  vpc_id                         = module.vpc.vpc_id
+#  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
+#  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
+#  db_name                        = var.db_name
+#  db_username                    = var.db_username
+#  db_password                    = var.db_password
+#  db_class                       = var.db_class
+#  mlmdb_name                     = var.mlmdb_name
+#  db_allocated_storage           = var.db_allocated_storage
+#  mysql_engine_version           = var.mysql_engine_version
+#  backup_retention_period        = var.backup_retention_period
+#  storage_type                   = var.storage_type
+#  deletion_protection            = var.deletion_protection
+#  max_allocated_storage          = var.max_allocated_storage
+#  publicly_accessible            = var.publicly_accessible
+#  multi_az                       = var.multi_az
+#  secret_recovery_window_in_days = var.secret_recovery_window_in_days
+#  generate_db_password           = var.generate_db_password
+#
+#  # s3
+#  use_s3                        = var.use_s3
+#  pipeline_s3_credential_option = var.pipeline_s3_credential_option
+#  minio_service_region          = var.minio_service_region
+#  force_destroy_s3_bucket       = var.force_destroy_s3_bucket
+#  minio_aws_access_key_id       = var.minio_aws_access_key_id
+#  minio_aws_secret_access_key   = var.minio_aws_secret_access_key
+#
+#  # cognito
+#  use_cognito                     = var.use_cognito
+#  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
+#  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
+#  create_subdomain                = var.create_subdomain
+#  cognito_user_pool_name          = var.cognito_user_pool_name
+#  load_balancer_scheme            = var.load_balancer_scheme
+#
+#  tags = local.tags
+#
+#  providers = {
+#    aws          = aws
+#  }
+#
+#  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
+#}
 
 #---------------------------------------------------------------
 # Supporting Resources
