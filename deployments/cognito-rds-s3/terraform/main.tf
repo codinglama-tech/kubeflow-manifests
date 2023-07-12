@@ -140,69 +140,69 @@ module "eks_blueprints" {
   tags = local.tags
 }
 
-#
-#module "eks_blueprints_kubernetes_addons" {
-#  depends_on = [module.eks_blueprints]
-#  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
-#
-#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-#
-#  # EKS Managed Add-ons
-#  enable_amazon_eks_vpc_cni            = true
-#  enable_amazon_eks_coredns            = true
-#  enable_amazon_eks_kube_proxy         = true
-#  enable_amazon_eks_aws_ebs_csi_driver = true
-#
-#  # EKS Blueprints Add-ons
-#  enable_cert_manager                 = true
-#  enable_aws_load_balancer_controller = true
-#
-#  aws_efs_csi_driver_helm_config = {
-#    namespace = "kube-system"
-#    version   = "2.4.1"
-#  }
-#
-#  enable_aws_efs_csi_driver = true
-#
-#  aws_fsx_csi_driver_helm_config = {
-#    namespace = "kube-system"
-#    version   = "1.5.1"
-#  }
-#
-#  enable_aws_fsx_csi_driver = true
-#
-#  enable_nvidia_device_plugin = local.using_gpu
-#
-#  secrets_store_csi_driver_helm_config = {
-#    namespace = "kube-system"
-#    version   = "1.3.2"
-#    set = [
-#      {
-#        name  = "syncSecret.enabled",
-#        value = "true"
-#      }
-#    ]
-#  }
-#  enable_secrets_store_csi_driver = true
-#
-#
-#  csi_secrets_store_provider_aws_helm_config = {
-#    namespace = "kube-system"
-#    set = [
-#      {
-#        name  = "secrets-store-csi-driver.install",
-#        value = "false"
-#      }
-#    ]
-#  }
-#  enable_secrets_store_csi_driver_provider_aws = true
-#
-#  tags = local.tags
-#
-#}
+
+module "eks_blueprints_kubernetes_addons" {
+  depends_on = [module.eks_blueprints]
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
+
+  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+
+  # EKS Managed Add-ons
+  enable_amazon_eks_vpc_cni            = true
+  enable_amazon_eks_coredns            = true
+  enable_amazon_eks_kube_proxy         = true
+  enable_amazon_eks_aws_ebs_csi_driver = true
+
+  # EKS Blueprints Add-ons
+  enable_cert_manager                 = true
+  enable_aws_load_balancer_controller = true
+
+  aws_efs_csi_driver_helm_config = {
+    namespace = "kube-system"
+    version   = "2.4.1"
+  }
+
+  enable_aws_efs_csi_driver = true
+
+  aws_fsx_csi_driver_helm_config = {
+    namespace = "kube-system"
+    version   = "1.5.1"
+  }
+
+  enable_aws_fsx_csi_driver = true
+
+  enable_nvidia_device_plugin = local.using_gpu
+
+  secrets_store_csi_driver_helm_config = {
+    namespace = "kube-system"
+    version   = "1.3.2"
+    set = [
+      {
+        name  = "syncSecret.enabled",
+        value = "true"
+      }
+    ]
+  }
+  enable_secrets_store_csi_driver = true
+
+
+  csi_secrets_store_provider_aws_helm_config = {
+    namespace = "kube-system"
+    set = [
+      {
+        name  = "secrets-store-csi-driver.install",
+        value = "false"
+      }
+    ]
+  }
+  enable_secrets_store_csi_driver_provider_aws = true
+
+  tags = local.tags
+
+}
 #
 #module "eks_blueprints_outputs" {
 #  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
