@@ -52,7 +52,7 @@ locals {
 }
 
 provider "aws" {
-  region     = "ap-south-2"
+  region     = "ap-south-1"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
   }
@@ -60,7 +60,7 @@ provider "aws" {
 # Cognito requires a certificate in N.Virginia in order to have a custom domain for a user pool
 # https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
 provider "aws" {
-  region = "ap-south-2"
+  region = "ap-south-1"
   alias  = "aws"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
@@ -139,138 +139,138 @@ module "eks_blueprints" {
 
   tags = local.tags
 }
-
-
-module "eks_blueprints_kubernetes_addons" {
-  depends_on = [module.eks_blueprints]
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
-
-  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-
-  # EKS Managed Add-ons
-  enable_amazon_eks_vpc_cni            = true
-  enable_amazon_eks_coredns            = true
-  enable_amazon_eks_kube_proxy         = true
-  enable_amazon_eks_aws_ebs_csi_driver = true
-
-  # EKS Blueprints Add-ons
-  enable_cert_manager                 = true
-  enable_aws_load_balancer_controller = true
-
-  aws_efs_csi_driver_helm_config = {
-    namespace = "kube-system"
-    version   = "2.4.1"
-  }
-
-  enable_aws_efs_csi_driver = true
-
-  aws_fsx_csi_driver_helm_config = {
-    namespace = "kube-system"
-    version   = "1.5.1"
-  }
-
-  enable_aws_fsx_csi_driver = false
-
-  enable_nvidia_device_plugin = local.using_gpu
-
-  secrets_store_csi_driver_helm_config = {
-    namespace = "kube-system"
-    version   = "1.3.2"
-    set = [
-      {
-        name  = "syncSecret.enabled",
-        value = "true"
-      }
-    ]
-  }
-  enable_secrets_store_csi_driver = true
-
-
-  csi_secrets_store_provider_aws_helm_config = {
-    namespace = "kube-system"
-    set = [
-      {
-        name  = "secrets-store-csi-driver.install",
-        value = "false"
-      }
-    ]
-  }
-  enable_secrets_store_csi_driver_provider_aws = true
-
-  tags = local.tags
-
-}
-
-module "eks_blueprints_outputs" {
-  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
-
-  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-
-  tags = local.tags
-}
-
-module "kubeflow_components" {
+#
+#
+#module "eks_blueprints_kubernetes_addons" {
 #  depends_on = [module.eks_blueprints]
-  source = "./cognito-rds-s3-components"
-
-  kf_helm_repo_path              = local.kf_helm_repo_path
-  addon_context                  = module.eks_blueprints_outputs.addon_context
-  enable_aws_telemetry           = var.enable_aws_telemetry
-  notebook_enable_culling        = var.notebook_enable_culling
-  notebook_cull_idle_time        = var.notebook_cull_idle_time
-  notebook_idleness_check_period = var.notebook_idleness_check_period
-
-  # rds
-  use_rds                        = var.use_rds
-  vpc_id                         = module.vpc.vpc_id
-  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
-  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
-  db_name                        = var.db_name
-  db_username                    = var.db_username
-  db_password                    = var.db_password
-  db_class                       = var.db_class
-  mlmdb_name                     = var.mlmdb_name
-  db_allocated_storage           = var.db_allocated_storage
-  mysql_engine_version           = var.mysql_engine_version
-  backup_retention_period        = var.backup_retention_period
-  storage_type                   = var.storage_type
-  deletion_protection            = var.deletion_protection
-  max_allocated_storage          = var.max_allocated_storage
-  publicly_accessible            = var.publicly_accessible
-  multi_az                       = var.multi_az
-  secret_recovery_window_in_days = var.secret_recovery_window_in_days
-  generate_db_password           = var.generate_db_password
-
-  # s3
-  use_s3                        = var.use_s3
-  pipeline_s3_credential_option = var.pipeline_s3_credential_option
-  minio_service_region          = var.minio_service_region
-  force_destroy_s3_bucket       = var.force_destroy_s3_bucket
-  minio_aws_access_key_id       = var.minio_aws_access_key_id
-  minio_aws_secret_access_key   = var.minio_aws_secret_access_key
-
-  # cognito
-  use_cognito                     = var.use_cognito
-  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
-  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
-  create_subdomain                = var.create_subdomain
-  cognito_user_pool_name          = var.cognito_user_pool_name
-  load_balancer_scheme            = var.load_balancer_scheme
-
-  tags = local.tags
-
-  providers = {
-    aws          = aws
-  }
-
-  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
-}
+#  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
+#
+#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+#
+#  # EKS Managed Add-ons
+#  enable_amazon_eks_vpc_cni            = true
+#  enable_amazon_eks_coredns            = true
+#  enable_amazon_eks_kube_proxy         = true
+#  enable_amazon_eks_aws_ebs_csi_driver = true
+#
+#  # EKS Blueprints Add-ons
+#  enable_cert_manager                 = true
+#  enable_aws_load_balancer_controller = true
+#
+#  aws_efs_csi_driver_helm_config = {
+#    namespace = "kube-system"
+#    version   = "2.4.1"
+#  }
+#
+#  enable_aws_efs_csi_driver = true
+#
+#  aws_fsx_csi_driver_helm_config = {
+#    namespace = "kube-system"
+#    version   = "1.5.1"
+#  }
+#
+#  enable_aws_fsx_csi_driver = false
+#
+#  enable_nvidia_device_plugin = local.using_gpu
+#
+#  secrets_store_csi_driver_helm_config = {
+#    namespace = "kube-system"
+#    version   = "1.3.2"
+#    set = [
+#      {
+#        name  = "syncSecret.enabled",
+#        value = "true"
+#      }
+#    ]
+#  }
+#  enable_secrets_store_csi_driver = true
+#
+#
+#  csi_secrets_store_provider_aws_helm_config = {
+#    namespace = "kube-system"
+#    set = [
+#      {
+#        name  = "secrets-store-csi-driver.install",
+#        value = "false"
+#      }
+#    ]
+#  }
+#  enable_secrets_store_csi_driver_provider_aws = true
+#
+#  tags = local.tags
+#
+#}
+#
+#module "eks_blueprints_outputs" {
+#  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
+#
+#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+#
+#  tags = local.tags
+#}
+#
+#module "kubeflow_components" {
+##  depends_on = [module.eks_blueprints]
+#  source = "./cognito-rds-s3-components"
+#
+#  kf_helm_repo_path              = local.kf_helm_repo_path
+#  addon_context                  = module.eks_blueprints_outputs.addon_context
+#  enable_aws_telemetry           = var.enable_aws_telemetry
+#  notebook_enable_culling        = var.notebook_enable_culling
+#  notebook_cull_idle_time        = var.notebook_cull_idle_time
+#  notebook_idleness_check_period = var.notebook_idleness_check_period
+#
+#  # rds
+#  use_rds                        = var.use_rds
+#  vpc_id                         = module.vpc.vpc_id
+#  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
+#  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
+#  db_name                        = var.db_name
+#  db_username                    = var.db_username
+#  db_password                    = var.db_password
+#  db_class                       = var.db_class
+#  mlmdb_name                     = var.mlmdb_name
+#  db_allocated_storage           = var.db_allocated_storage
+#  mysql_engine_version           = var.mysql_engine_version
+#  backup_retention_period        = var.backup_retention_period
+#  storage_type                   = var.storage_type
+#  deletion_protection            = var.deletion_protection
+#  max_allocated_storage          = var.max_allocated_storage
+#  publicly_accessible            = var.publicly_accessible
+#  multi_az                       = var.multi_az
+#  secret_recovery_window_in_days = var.secret_recovery_window_in_days
+#  generate_db_password           = var.generate_db_password
+#
+#  # s3
+#  use_s3                        = var.use_s3
+#  pipeline_s3_credential_option = var.pipeline_s3_credential_option
+#  minio_service_region          = var.minio_service_region
+#  force_destroy_s3_bucket       = var.force_destroy_s3_bucket
+#  minio_aws_access_key_id       = var.minio_aws_access_key_id
+#  minio_aws_secret_access_key   = var.minio_aws_secret_access_key
+#
+#  # cognito
+#  use_cognito                     = var.use_cognito
+#  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
+#  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
+#  create_subdomain                = var.create_subdomain
+#  cognito_user_pool_name          = var.cognito_user_pool_name
+#  load_balancer_scheme            = var.load_balancer_scheme
+#
+#  tags = local.tags
+#
+#  providers = {
+#    aws          = aws
+#  }
+#
+#  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
+#}
 
 #---------------------------------------------------------------
 # Supporting Resources

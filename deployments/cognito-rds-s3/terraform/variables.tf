@@ -16,7 +16,7 @@ variable "aws_terraform_user_access_secret_key" {
 variable "cluster_region" {
   description = "Region to create the cluster"
   type        = string
-  default     = "ap-south-2"
+  default     = "ap-south-1"
 }
 
 variable "eks_version" {
