@@ -28,7 +28,7 @@ variable "eks_version" {
 variable "node_instance_type" {
   description = "The instance type of an EKS node"
   type        = string
-  default     = "m5.xlarge"
+  default     = "t3.xlarge"
 }
 
 variable "node_instance_type_gpu" {
