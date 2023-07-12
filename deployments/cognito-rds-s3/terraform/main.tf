@@ -172,7 +172,7 @@ module "eks_blueprints_kubernetes_addons" {
     version   = "1.5.1"
   }
 
-  enable_aws_fsx_csi_driver = true
+  enable_aws_fsx_csi_driver = false
 
   enable_nvidia_device_plugin = local.using_gpu
 

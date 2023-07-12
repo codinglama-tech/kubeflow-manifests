@@ -114,7 +114,7 @@ data "aws_ec2_instance_type_offerings" "availability_zones_gpu" {
 # EKS Blueprints
 #---------------------------------------------------------------
 module "eks_blueprints" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.31.0"
+  source = "github.com/codinglama-tech/terraform-aws-eks-blueprints?ref=fix-aws-auth-dep-nodegroup"
 
   cluster_name    = local.cluster_name
   cluster_version = local.eks_version
@@ -127,44 +127,44 @@ module "eks_blueprints" {
 
   tags = local.tags
 }
-
-module "eks_blueprints_kubernetes_addons" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
-
-  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-
-  # EKS Managed Add-ons
-  enable_amazon_eks_vpc_cni            = true
-  enable_amazon_eks_coredns            = true
-  enable_amazon_eks_kube_proxy         = true
-  enable_amazon_eks_aws_ebs_csi_driver = true
-
-  # EKS Blueprints Add-ons
-  enable_cert_manager                 = true
-  enable_aws_load_balancer_controller = true
-
-  aws_efs_csi_driver_helm_config = {
-    namespace = "kube-system"
-    version   = "2.4.1"
-  }
-
-  enable_aws_efs_csi_driver = true
-
-  aws_fsx_csi_driver_helm_config = {
-    namespace = "kube-system"
-    version   = "1.5.1"
-  }
-
-  enable_aws_fsx_csi_driver = true
-
-  enable_nvidia_device_plugin = local.using_gpu
-
-  tags = local.tags
-
-}
+#
+#module "eks_blueprints_kubernetes_addons" {
+#  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.31.0"
+#
+#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+#
+#  # EKS Managed Add-ons
+#  enable_amazon_eks_vpc_cni            = true
+#  enable_amazon_eks_coredns            = true
+#  enable_amazon_eks_kube_proxy         = true
+#  enable_amazon_eks_aws_ebs_csi_driver = true
+#
+#  # EKS Blueprints Add-ons
+#  enable_cert_manager                 = true
+#  enable_aws_load_balancer_controller = true
+#
+#  aws_efs_csi_driver_helm_config = {
+#    namespace = "kube-system"
+#    version   = "2.4.1"
+#  }
+#
+#  enable_aws_efs_csi_driver = true
+#
+#  aws_fsx_csi_driver_helm_config = {
+#    namespace = "kube-system"
+#    version   = "1.5.1"
+#  }
+#
+#  enable_aws_fsx_csi_driver = true
+#
+#  enable_nvidia_device_plugin = local.using_gpu
+#
+#  tags = local.tags
+#
+#}
 
 # todo: update the blueprints repo code to export the desired values as outputs
 module "eks_blueprints_outputs" {
@@ -178,31 +178,31 @@ module "eks_blueprints_outputs" {
   tags = local.tags
 }
 
-module "kubeflow_components" {
-  source = "./cognito-components"
-
-  kf_helm_repo_path    = local.kf_helm_repo_path
-  addon_context        = module.eks_blueprints_outputs.addon_context
-  enable_aws_telemetry = var.enable_aws_telemetry
-
-  notebook_enable_culling        = var.notebook_enable_culling
-  notebook_cull_idle_time        = var.notebook_cull_idle_time
-  notebook_idleness_check_period = var.notebook_idleness_check_period
-
-  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
-  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
-  create_subdomain                = var.create_subdomain
-  cognito_user_pool_name          = var.cognito_user_pool_name
-  load_balancer_scheme            = var.load_balancer_scheme
-
-  tags = local.tags
-
-  providers = {
-    aws          = aws
-  }
-
-  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
-}
+#module "kubeflow_components" {
+#  source = "./cognito-components"
+#
+#  kf_helm_repo_path    = local.kf_helm_repo_path
+#  addon_context        = module.eks_blueprints_outputs.addon_context
+#  enable_aws_telemetry = var.enable_aws_telemetry
+#
+#  notebook_enable_culling        = var.notebook_enable_culling
+#  notebook_cull_idle_time        = var.notebook_cull_idle_time
+#  notebook_idleness_check_period = var.notebook_idleness_check_period
+#
+#  aws_route53_root_zone_name      = var.aws_route53_root_zone_name
+#  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
+#  create_subdomain                = var.create_subdomain
+#  cognito_user_pool_name          = var.cognito_user_pool_name
+#  load_balancer_scheme            = var.load_balancer_scheme
+#
+#  tags = local.tags
+#
+#  providers = {
+#    aws          = aws
+#  }
+#
+#  aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
+#}
 
 #---------------------------------------------------------------
 # Supporting Resources
