@@ -33,7 +33,7 @@ variable "db_password" {
 variable "db_class" {
   type        = string
   description = "Database instance type"
-  default     = "db.m5.large"
+  default     = "db.t3.xlarge"
 }
 
 variable "db_allocated_storage" {
