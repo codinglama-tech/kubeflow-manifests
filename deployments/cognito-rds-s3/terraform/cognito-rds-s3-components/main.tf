@@ -160,7 +160,7 @@ module "subdomain" {
 }
 
 module "cognito" {
-#  count                           = var.use_cognito ? 1 : 0
+  count                           = var.use_cognito ? 1 : 0
   source                          = "../../../../iaac/terraform/aws-infra/cognito"
   cognito_user_pool_name          = var.cognito_user_pool_name
   aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
@@ -170,7 +170,7 @@ module "cognito" {
     aws          = aws
   }
 
-#  depends_on = [module.subdomain]
+  depends_on = [module.subdomain]
   aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 #
@@ -193,26 +193,26 @@ module "cognito" {
 #  addon_context = var.addon_context
 #  depends_on    = [kubernetes_namespace.kubeflow, module.rds, module.s3]
 #}
-#
-#module "kubeflow_issuer" {
-#  source = "../../../../iaac/terraform/common/kubeflow-issuer"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/common/kubeflow-issuer"
-#  }
-#
-#  addon_context = var.addon_context
-#  depends_on    = [kubernetes_namespace.kubeflow]
-#}
-#
-#module "kubeflow_istio" {
-#  source = "../../../../iaac/terraform/common/istio"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/common/istio"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_issuer]
-#}
-#
+
+module "kubeflow_issuer" {
+  source = "../../../../iaac/terraform/common/kubeflow-issuer"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/common/kubeflow-issuer"
+  }
+
+  addon_context = var.addon_context
+  depends_on    = [kubernetes_namespace.kubeflow]
+}
+
+module "kubeflow_istio" {
+  source = "../../../../iaac/terraform/common/istio"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/common/istio"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_issuer]
+}
+
 #module "kubeflow_dex" {
 #  count  = var.use_cognito ? 0 : 1
 #  source = "../../../../iaac/terraform/common/dex"
@@ -232,22 +232,21 @@ module "cognito" {
 #  addon_context = var.addon_context
 #  depends_on    = [module.kubeflow_dex]
 #}
-#
-#module "ingress_cognito" {
-#  count                           = var.use_cognito ? 1 : 0
-#  source                          = "../../../../iaac/terraform/common/ingress/cognito"
-#  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
-#  cluster_name                    = var.addon_context.eks_cluster_id
-#  cognito_user_pool_arn           = module.cognito.user_pool_arn
-#  cognito_app_client_id           = module.cognito.app_client_id
-##  cognito_user_pool_domain        = module.cognito.user_pool_domain
-#  load_balancer_scheme            = var.load_balancer_scheme
-#  tags                            = var.tags
-#
-#  depends_on = [module.kubeflow_istio, module.cognito]
-#  cognito_user_pool_domain = ""
-#}
-#
+
+module "ingress_cognito" {
+  count                           = var.use_cognito ? 1 : 0
+  source                          = "../../../../iaac/terraform/common/ingress/cognito"
+  aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
+  cluster_name                    = var.addon_context.eks_cluster_id
+  cognito_user_pool_arn           = module.cognito.user_pool_arn
+  cognito_app_client_id           = module.cognito.app_client_id
+  cognito_user_pool_domain        = module.cognito.user_pool_domain
+  load_balancer_scheme            = var.load_balancer_scheme
+  tags                            = var.tags
+
+  depends_on = [module.kubeflow_istio, module.cognito]
+}
+
 #module "kubeflow_aws_authservice" {
 #  count  = var.use_cognito ? 1 : 0
 #  source = "../../../../iaac/terraform/common/aws-authservice"
