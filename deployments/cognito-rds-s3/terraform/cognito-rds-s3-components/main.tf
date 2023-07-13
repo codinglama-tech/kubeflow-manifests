@@ -238,9 +238,9 @@ module "ingress_cognito" {
   source                          = "../../../../iaac/terraform/common/ingress/cognito"
   aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
   cluster_name                    = var.addon_context.eks_cluster_id
-  cognito_user_pool_arn           = module.cognito[0].user_pool_arn
-  cognito_app_client_id           = module.cognito[0].app_client_id
-  cognito_user_pool_domain        = module.cognito[0].user_pool_domain
+  cognito_user_pool_arn           = module.cognito.user_pool_arn
+  cognito_app_client_id           = module.cognito.app_client_id
+  cognito_user_pool_domain        = module.cognito.user_pool_domain
   load_balancer_scheme            = var.load_balancer_scheme
   tags                            = var.tags
 
