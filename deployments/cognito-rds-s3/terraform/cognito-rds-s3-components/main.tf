@@ -160,7 +160,7 @@ module "subdomain" {
 }
 
 module "cognito" {
-  count                           = var.use_cognito ? 1 : 0
+#  count                           = var.use_cognito ? 1 : 0
   source                          = "../../../../iaac/terraform/aws-infra/cognito"
   cognito_user_pool_name          = var.cognito_user_pool_name
   aws_route53_subdomain_zone_name = var.aws_route53_subdomain_zone_name
@@ -170,7 +170,7 @@ module "cognito" {
     aws          = aws
   }
 
-  depends_on = [module.subdomain]
+#  depends_on = [module.subdomain]
   aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
