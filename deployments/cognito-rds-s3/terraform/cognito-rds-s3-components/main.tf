@@ -256,6 +256,7 @@ module "kubeflow_aws_authservice" {
     set = [
       {
         name  = "LOGOUT_URL"
+        value = ""
 #        value = module.cognito.logout_url
       }
     ]
