@@ -25,7 +25,7 @@ resource "aws_route53_record" "certificate_validation_root_domain" {
   zone_id         = data.aws_route53_zone.root.zone_id
 }
 
-#resource "aws_acm_certificate_validation" "root_domain_deployment_region" {
-#  certificate_arn         = aws_acm_certificate.root_domain_deployment_region.arn
-#  validation_record_fqdns = [for record in aws_route53_record.certificate_validation_root_domain : record.fqdn]
-#}
+resource "aws_acm_certificate_validation" "root_domain_deployment_region" {
+  certificate_arn         = aws_acm_certificate.root_domain_deployment_region.arn
+  validation_record_fqdns = [for record in aws_route53_record.certificate_validation_root_domain : record.fqdn]
+}
