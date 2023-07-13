@@ -240,11 +240,12 @@ module "ingress_cognito" {
   cluster_name                    = var.addon_context.eks_cluster_id
   cognito_user_pool_arn           = module.cognito.user_pool_arn
   cognito_app_client_id           = module.cognito.app_client_id
-  cognito_user_pool_domain        = module.cognito.user_pool_domain
+#  cognito_user_pool_domain        = module.cognito.user_pool_domain
   load_balancer_scheme            = var.load_balancer_scheme
   tags                            = var.tags
 
   depends_on = [module.kubeflow_istio, module.cognito]
+  cognito_user_pool_domain = ""
 }
 
 module "kubeflow_aws_authservice" {
@@ -255,7 +256,7 @@ module "kubeflow_aws_authservice" {
     set = [
       {
         name  = "LOGOUT_URL"
-        value = module.cognito.logout_url
+#        value = module.cognito.logout_url
       }
     ]
   }
