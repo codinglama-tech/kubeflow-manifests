@@ -170,7 +170,7 @@ module "cognito" {
     aws          = aws
   }
 
-  depends_on = [module.subdomain]
+#  depends_on = [module.subdomain]
   aws_terraform_user_access_secret_key = var.aws_terraform_user_access_secret_key
 }
 
