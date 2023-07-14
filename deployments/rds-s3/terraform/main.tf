@@ -27,7 +27,7 @@ locals {
   managed_node_group_cpu = {
     node_group_name = "managed-ondemand-cpu"
     instance_types  = [var.node_instance_type]
-    min_size        = 1
+    min_size        = 2
     desired_size    = 2
     max_size        = 3
     subnet_ids      = module.vpc.private_subnets
