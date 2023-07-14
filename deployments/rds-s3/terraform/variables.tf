@@ -1,3 +1,7 @@
+variable "aws_terraform_user_access_secret_key" {
+  type = string
+}
+
 # tflint-ignore: terraform_unused_declarations
 variable "cluster_name" {
   description = "Name of cluster"

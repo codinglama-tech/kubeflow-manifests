@@ -27,18 +27,18 @@ locals {
   managed_node_group_cpu = {
     node_group_name = "managed-ondemand-cpu"
     instance_types  = [var.node_instance_type]
-    min_size        = 5
-    desired_size    = 5
-    max_size        = 10
+    min_size        = 1
+    desired_size    = 1
+    max_size        = 3
     subnet_ids      = module.vpc.private_subnets
   }
 
   managed_node_group_gpu = local.using_gpu ? {
     node_group_name = "managed-ondemand-gpu"
     instance_types  = [var.node_instance_type_gpu]
-    min_size        = 3
-    desired_size    = 3
-    max_size        = 5
+    min_size        = 1
+    desired_size    = 1
+    max_size        = 3
     ami_type        = "AL2_x86_64_GPU"
     subnet_ids      = module.vpc.private_subnets
   } : null
@@ -52,7 +52,10 @@ locals {
 }
 
 provider "aws" {
-  region = local.region
+  region = "ap-south-1"
+  alias  = "aws"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
 }
 
 provider "kubernetes" {
@@ -180,60 +183,60 @@ module "eks_blueprints_kubernetes_addons" {
   tags = local.tags
 
 }
-
-# todo: update the blueprints repo code to export the desired values as outputs
-module "eks_blueprints_outputs" {
-  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
-
-  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-
-  tags = local.tags
-}
-
-module "kubeflow_components" {
-  source = "./rds-s3-components"
-
-  kf_helm_repo_path    = local.kf_helm_repo_path
-  addon_context        = module.eks_blueprints_outputs.addon_context
-  enable_aws_telemetry = var.enable_aws_telemetry
-
-  notebook_enable_culling        = var.notebook_enable_culling
-  notebook_cull_idle_time        = var.notebook_cull_idle_time
-  notebook_idleness_check_period = var.notebook_idleness_check_period
-
-  use_rds                       = var.use_rds
-  use_s3                        = var.use_s3
-  pipeline_s3_credential_option = var.pipeline_s3_credential_option
-
-  vpc_id                         = module.vpc.vpc_id
-  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
-  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
-  db_name                        = var.db_name
-  db_username                    = var.db_username
-  db_password                    = var.db_password
-  db_class                       = var.db_class
-  mlmdb_name                     = var.mlmdb_name
-  db_allocated_storage           = var.db_allocated_storage
-  mysql_engine_version           = var.mysql_engine_version
-  backup_retention_period        = var.backup_retention_period
-  storage_type                   = var.storage_type
-  deletion_protection            = var.deletion_protection
-  max_allocated_storage          = var.max_allocated_storage
-  publicly_accessible            = var.publicly_accessible
-  multi_az                       = var.multi_az
-  secret_recovery_window_in_days = var.secret_recovery_window_in_days
-  generate_db_password           = var.generate_db_password
-
-  minio_service_region        = var.minio_service_region
-  force_destroy_s3_bucket     = var.force_destroy_s3_bucket
-  minio_aws_access_key_id     = var.minio_aws_access_key_id
-  minio_aws_secret_access_key = var.minio_aws_secret_access_key
-
-  tags = local.tags
-}
+#
+## todo: update the blueprints repo code to export the desired values as outputs
+#module "eks_blueprints_outputs" {
+#  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
+#
+#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+#
+#  tags = local.tags
+#}
+#
+#module "kubeflow_components" {
+#  source = "./rds-s3-components"
+#
+#  kf_helm_repo_path    = local.kf_helm_repo_path
+#  addon_context        = module.eks_blueprints_outputs.addon_context
+#  enable_aws_telemetry = var.enable_aws_telemetry
+#
+#  notebook_enable_culling        = var.notebook_enable_culling
+#  notebook_cull_idle_time        = var.notebook_cull_idle_time
+#  notebook_idleness_check_period = var.notebook_idleness_check_period
+#
+#  use_rds                       = var.use_rds
+#  use_s3                        = var.use_s3
+#  pipeline_s3_credential_option = var.pipeline_s3_credential_option
+#
+#  vpc_id                         = module.vpc.vpc_id
+#  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
+#  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
+#  db_name                        = var.db_name
+#  db_username                    = var.db_username
+#  db_password                    = var.db_password
+#  db_class                       = var.db_class
+#  mlmdb_name                     = var.mlmdb_name
+#  db_allocated_storage           = var.db_allocated_storage
+#  mysql_engine_version           = var.mysql_engine_version
+#  backup_retention_period        = var.backup_retention_period
+#  storage_type                   = var.storage_type
+#  deletion_protection            = var.deletion_protection
+#  max_allocated_storage          = var.max_allocated_storage
+#  publicly_accessible            = var.publicly_accessible
+#  multi_az                       = var.multi_az
+#  secret_recovery_window_in_days = var.secret_recovery_window_in_days
+#  generate_db_password           = var.generate_db_password
+#
+#  minio_service_region        = var.minio_service_region
+#  force_destroy_s3_bucket     = var.force_destroy_s3_bucket
+#  minio_aws_access_key_id     = var.minio_aws_access_key_id
+#  minio_aws_secret_access_key = var.minio_aws_secret_access_key
+#
+#  tags = local.tags
+#}
 
 #---------------------------------------------------------------
 # Supporting Resources
