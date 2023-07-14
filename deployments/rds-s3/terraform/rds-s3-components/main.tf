@@ -346,80 +346,80 @@ module "kubeflow_jupyter_web_app" {
   addon_context = var.addon_context
   depends_on    = [module.kubeflow_notebook_controller]
 }
-#
-#module "kubeflow_profiles_and_kfam" {
-#  source      = "../../../../iaac/terraform/apps/profiles-and-kfam"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/apps/profiles-and-kfam"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_jupyter_web_app]
-#}
-#
-#module "kubeflow_volumes_web_app" {
-#  source      = "../../../../iaac/terraform/apps/volumes-web-app"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/apps/volumes-web-app"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_profiles_and_kfam]
-#}
-#
-#module "kubeflow_tensorboards_web_app" {
-#  source      = "../../../../iaac/terraform/apps/tensorboards-web-app"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/apps/tensorboards-web-app"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_volumes_web_app]
-#}
-#
-#module "kubeflow_tensorboard_controller" {
-#  source      = "../../../../iaac/terraform/apps/tensorboard-controller"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/apps/tensorboard-controller"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_tensorboards_web_app]
-#}
-#
-#module "kubeflow_training_operator" {
-#  source      = "../../../../iaac/terraform/apps/training-operator"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/apps/training-operator"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_tensorboard_controller]
-#}
-#
-#module "kubeflow_aws_telemetry" {
-#  count       = var.enable_aws_telemetry ? 1 : 0
-#  source      = "../../../../iaac/terraform/common/aws-telemetry"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/common/aws-telemetry"
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_training_operator]
-#}
-#
-#module "filter_kubeflow_user_namespace_set_values" {
-#  source     = "../../../../iaac/terraform/utils/set-values-filter"
-#  set_values = {
-#    "awsIamForServiceAccount.awsIamRole" = try(data.aws_iam_role.user_namespace_irsa_iam_role[0].arn, null)
-#  }
-#}
-#
-#module "kubeflow_user_namespace" {
-#  source      = "../../../../iaac/terraform/common/user-namespace"
-#  helm_config = {
-#    chart = "${var.kf_helm_repo_path}/charts/common/user-namespace",
-#    set   = module.filter_kubeflow_user_namespace_set_values.set_values
-#  }
-#  addon_context = var.addon_context
-#  depends_on    = [module.kubeflow_aws_telemetry, module.user_namespace_irsa]
-#}
-#
-#module "ack_sagemaker" {
-#  source        = "../../../../iaac/terraform/common/ack-sagemaker-controller"
-#  addon_context = var.addon_context
-#}
+
+module "kubeflow_profiles_and_kfam" {
+  source      = "../../../../iaac/terraform/apps/profiles-and-kfam"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/apps/profiles-and-kfam"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_jupyter_web_app]
+}
+
+module "kubeflow_volumes_web_app" {
+  source      = "../../../../iaac/terraform/apps/volumes-web-app"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/apps/volumes-web-app"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_profiles_and_kfam]
+}
+
+module "kubeflow_tensorboards_web_app" {
+  source      = "../../../../iaac/terraform/apps/tensorboards-web-app"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/apps/tensorboards-web-app"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_volumes_web_app]
+}
+
+module "kubeflow_tensorboard_controller" {
+  source      = "../../../../iaac/terraform/apps/tensorboard-controller"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/apps/tensorboard-controller"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_tensorboards_web_app]
+}
+
+module "kubeflow_training_operator" {
+  source      = "../../../../iaac/terraform/apps/training-operator"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/apps/training-operator"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_tensorboard_controller]
+}
+
+module "kubeflow_aws_telemetry" {
+  count       = var.enable_aws_telemetry ? 1 : 0
+  source      = "../../../../iaac/terraform/common/aws-telemetry"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/common/aws-telemetry"
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_training_operator]
+}
+
+module "filter_kubeflow_user_namespace_set_values" {
+  source     = "../../../../iaac/terraform/utils/set-values-filter"
+  set_values = {
+    "awsIamForServiceAccount.awsIamRole" = try(data.aws_iam_role.user_namespace_irsa_iam_role[0].arn, null)
+  }
+}
+
+module "kubeflow_user_namespace" {
+  source      = "../../../../iaac/terraform/common/user-namespace"
+  helm_config = {
+    chart = "${var.kf_helm_repo_path}/charts/common/user-namespace",
+    set   = module.filter_kubeflow_user_namespace_set_values.set_values
+  }
+  addon_context = var.addon_context
+  depends_on    = [module.kubeflow_aws_telemetry, module.user_namespace_irsa]
+}
+
+module "ack_sagemaker" {
+  source        = "../../../../iaac/terraform/common/ack-sagemaker-controller"
+  addon_context = var.addon_context
+}
