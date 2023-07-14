@@ -1,0 +1,29 @@
+apiVersion: v1
+data:
+  mapAccounts: |
+    - "794699027442"
+  mapRoles: |
+    - "groups":
+      - "system:bootstrappers"
+      - "system:nodes"
+      "rolearn": "arn:aws:iam::794699027442:role/ai-voyager-managed-ondemand-cpu"
+      "username": "system:node:{{EC2PrivateDNSName}}"
+  mapUsers: |
+    - userarn: arn:aws:iam::794699027442:user/Juzer
+      username: juzer
+      groups:
+      - system:masters
+    - userarn: arn:aws:iam::794699027442:user/mohammed
+      username: mohammed
+      groups:
+      - system:masters
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2023-07-13T05:13:37Z"
+  labels:
+    app.kubernetes.io/created-by: terraform-aws-eks-blueprints
+    app.kubernetes.io/managed-by: terraform-aws-eks-blueprints
+  name: aws-auth
+  namespace: kube-system
+  resourceVersion: "6046"
+  uid: 8a630e92-859a-41bf-9060-41785ad41bc8
