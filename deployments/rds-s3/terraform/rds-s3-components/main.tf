@@ -68,11 +68,13 @@ module "kubeflow_secrets_manager_irsa" {
   create_kubernetes_service_account = true
   kubernetes_service_account        = "kubeflow-secrets-manager-sa"
   irsa_iam_role_name                = format("%s-%s-%s-%s", "kf-secrets-manager", "irsa", var.addon_context.eks_cluster_id, var.addon_context.aws_region_name)
-  irsa_iam_policies                 = ["arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess", "arn:aws:iam::aws:policy/SecretsManagerReadWrite"]
-  irsa_iam_role_path                = var.addon_context.irsa_iam_role_path
-  irsa_iam_permissions_boundary     = var.addon_context.irsa_iam_permissions_boundary
-  eks_cluster_id                    = var.addon_context.eks_cluster_id
-  eks_oidc_provider_arn             = var.addon_context.eks_oidc_provider_arn
+  irsa_iam_policies                 = [
+    "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess", "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+  ]
+  irsa_iam_role_path            = var.addon_context.irsa_iam_role_path
+  irsa_iam_permissions_boundary = var.addon_context.irsa_iam_permissions_boundary
+  eks_cluster_id                = var.addon_context.eks_cluster_id
+  eks_oidc_provider_arn         = var.addon_context.eks_oidc_provider_arn
 }
 
 module "kubeflow_pipeline_irsa" {
@@ -120,8 +122,8 @@ module "rds" {
   security_group_id              = var.security_group_id
   db_name                        = var.db_name
   db_username                    = var.db_username
-#  db_password                    = coalesce(var.db_password, try(random_password.db_password[0].result, null))
-  db_password                 =
+  #  db_password                    = coalesce(var.db_password, try(random_password.db_password[0].result, null))
+  db_password                    = var.db_password
   db_class                       = var.db_class
   db_allocated_storage           = var.db_allocated_storage
   backup_retention_period        = var.backup_retention_period
@@ -145,7 +147,7 @@ module "s3" {
 }
 
 module "filter_secrets_manager_set_values" {
-  source = "../../../../iaac/terraform/utils/set-values-filter"
+  source     = "../../../../iaac/terraform/utils/set-values-filter"
   set_values = {
     "rds.secretName" = try(module.rds[0].rds_secret_name, null),
     "s3.secretName"  = try(module.s3[0].s3_secret_name, null),
@@ -153,8 +155,8 @@ module "filter_secrets_manager_set_values" {
 }
 
 module "secrets_manager" {
-  count  = var.use_rds || (var.use_s3 && local.use_static) ? 1 : 0
-  source = "../../../../iaac/terraform/common/aws-secrets-manager"
+  count       = var.use_rds || (var.use_s3 && local.use_static) ? 1 : 0
+  source      = "../../../../iaac/terraform/common/aws-secrets-manager"
   helm_config = {
     chart = local.secrets_manager_chart
     set   = module.filter_secrets_manager_set_values.set_values
@@ -165,7 +167,7 @@ module "secrets_manager" {
 }
 
 module "kubeflow_issuer" {
-  source = "../../../../iaac/terraform/common/kubeflow-issuer"
+  source      = "../../../../iaac/terraform/common/kubeflow-issuer"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/kubeflow-issuer"
   }
@@ -175,7 +177,7 @@ module "kubeflow_issuer" {
 }
 
 module "kubeflow_istio" {
-  source = "../../../../iaac/terraform/common/istio"
+  source      = "../../../../iaac/terraform/common/istio"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/istio"
   }
@@ -184,7 +186,7 @@ module "kubeflow_istio" {
 }
 
 module "kubeflow_dex" {
-  source = "../../../../iaac/terraform/common/dex"
+  source      = "../../../../iaac/terraform/common/dex"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/dex"
   }
@@ -193,7 +195,7 @@ module "kubeflow_dex" {
 }
 
 module "kubeflow_oidc_authservice" {
-  source = "../../../../iaac/terraform/common/oidc-authservice"
+  source      = "../../../../iaac/terraform/common/oidc-authservice"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/oidc-authservice"
   }
@@ -202,7 +204,7 @@ module "kubeflow_oidc_authservice" {
 }
 
 module "kubeflow_knative_serving" {
-  source = "../../../../iaac/terraform/common/knative-serving"
+  source      = "../../../../iaac/terraform/common/knative-serving"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/knative-serving"
   }
@@ -211,7 +213,7 @@ module "kubeflow_knative_serving" {
 }
 
 module "kubeflow_cluster_local_gateway" {
-  source = "../../../../iaac/terraform/common/cluster-local-gateway"
+  source      = "../../../../iaac/terraform/common/cluster-local-gateway"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/cluster-local-gateway"
   }
@@ -220,7 +222,7 @@ module "kubeflow_cluster_local_gateway" {
 }
 
 module "kubeflow_knative_eventing" {
-  source = "../../../../iaac/terraform/common/knative-eventing"
+  source      = "../../../../iaac/terraform/common/knative-eventing"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/knative-eventing"
   }
@@ -229,7 +231,7 @@ module "kubeflow_knative_eventing" {
 }
 
 module "kubeflow_roles" {
-  source = "../../../../iaac/terraform/common/kubeflow-roles"
+  source      = "../../../../iaac/terraform/common/kubeflow-roles"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/kubeflow-roles"
   }
@@ -238,7 +240,7 @@ module "kubeflow_roles" {
 }
 
 module "kubeflow_istio_resources" {
-  source = "../../../../iaac/terraform/common/kubeflow-istio-resources"
+  source      = "../../../../iaac/terraform/common/kubeflow-istio-resources"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/kubeflow-istio-resources"
   }
@@ -247,19 +249,19 @@ module "kubeflow_istio_resources" {
 }
 
 module "filter_kfp_set_values" {
-  source = "../../../../iaac/terraform/utils/set-values-filter"
+  source     = "../../../../iaac/terraform/utils/set-values-filter"
   set_values = {
     "rds.dbHost"            = try(module.rds[0].rds_endpoint, null),
     "s3.bucketName"         = try(module.s3[0].s3_bucket_name, null),
     "s3.minioServiceRegion" = coalesce(var.minio_service_region, var.addon_context.aws_region_name)
     "rds.mlmdDb"            = var.mlmdb_name,
     "s3.minioServiceHost"   = var.minio_service_host
-    "s3.roleArn"          = try(data.aws_iam_role.pipeline_irsa_iam_role[0].arn, null)
+    "s3.roleArn"            = try(data.aws_iam_role.pipeline_irsa_iam_role[0].arn, null)
   }
 }
 
 module "kubeflow_pipelines" {
-  source = "../../../../iaac/terraform/apps/kubeflow-pipelines"
+  source      = "../../../../iaac/terraform/apps/kubeflow-pipelines"
   helm_config = {
     chart = local.kfp_chart
     set   = module.filter_kfp_set_values.set_values
@@ -269,7 +271,7 @@ module "kubeflow_pipelines" {
 }
 
 module "kubeflow_kserve" {
-  source = "../../../../iaac/terraform/common/kserve"
+  source      = "../../../../iaac/terraform/common/kserve"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/kserve"
   }
@@ -278,7 +280,7 @@ module "kubeflow_kserve" {
 }
 
 module "kubeflow_models_web_app" {
-  source = "../../../../iaac/terraform/apps/models-web-app"
+  source      = "../../../../iaac/terraform/apps/models-web-app"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/models-web-app"
   }
@@ -287,7 +289,7 @@ module "kubeflow_models_web_app" {
 }
 
 module "kubeflow_katib" {
-  source = "../../../../iaac/terraform/apps/katib"
+  source      = "../../../../iaac/terraform/apps/katib"
   helm_config = {
     chart = local.katib_chart
   }
@@ -296,7 +298,7 @@ module "kubeflow_katib" {
 }
 
 module "kubeflow_central_dashboard" {
-  source = "../../../../iaac/terraform/apps/central-dashboard"
+  source      = "../../../../iaac/terraform/apps/central-dashboard"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/central-dashboard"
   }
@@ -305,7 +307,7 @@ module "kubeflow_central_dashboard" {
 }
 
 module "kubeflow_admission_webhook" {
-  source = "../../../../iaac/terraform/apps/admission-webhook"
+  source      = "../../../../iaac/terraform/apps/admission-webhook"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/admission-webhook"
   }
@@ -314,10 +316,10 @@ module "kubeflow_admission_webhook" {
 }
 
 module "kubeflow_notebook_controller" {
-  source = "../../../../iaac/terraform/apps/notebook-controller"
+  source      = "../../../../iaac/terraform/apps/notebook-controller"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/notebook-controller"
-    set = [
+    set   = [
       {
         name  = "cullingPolicy.cullIdleTime",
         value = var.notebook_cull_idle_time
@@ -337,7 +339,7 @@ module "kubeflow_notebook_controller" {
 }
 
 module "kubeflow_jupyter_web_app" {
-  source = "../../../../iaac/terraform/apps/jupyter-web-app"
+  source      = "../../../../iaac/terraform/apps/jupyter-web-app"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/jupyter-web-app"
   }
@@ -346,7 +348,7 @@ module "kubeflow_jupyter_web_app" {
 }
 
 module "kubeflow_profiles_and_kfam" {
-  source = "../../../../iaac/terraform/apps/profiles-and-kfam"
+  source      = "../../../../iaac/terraform/apps/profiles-and-kfam"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/profiles-and-kfam"
   }
@@ -355,7 +357,7 @@ module "kubeflow_profiles_and_kfam" {
 }
 
 module "kubeflow_volumes_web_app" {
-  source = "../../../../iaac/terraform/apps/volumes-web-app"
+  source      = "../../../../iaac/terraform/apps/volumes-web-app"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/volumes-web-app"
   }
@@ -364,7 +366,7 @@ module "kubeflow_volumes_web_app" {
 }
 
 module "kubeflow_tensorboards_web_app" {
-  source = "../../../../iaac/terraform/apps/tensorboards-web-app"
+  source      = "../../../../iaac/terraform/apps/tensorboards-web-app"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/tensorboards-web-app"
   }
@@ -373,7 +375,7 @@ module "kubeflow_tensorboards_web_app" {
 }
 
 module "kubeflow_tensorboard_controller" {
-  source = "../../../../iaac/terraform/apps/tensorboard-controller"
+  source      = "../../../../iaac/terraform/apps/tensorboard-controller"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/tensorboard-controller"
   }
@@ -382,7 +384,7 @@ module "kubeflow_tensorboard_controller" {
 }
 
 module "kubeflow_training_operator" {
-  source = "../../../../iaac/terraform/apps/training-operator"
+  source      = "../../../../iaac/terraform/apps/training-operator"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/apps/training-operator"
   }
@@ -391,8 +393,8 @@ module "kubeflow_training_operator" {
 }
 
 module "kubeflow_aws_telemetry" {
-  count  = var.enable_aws_telemetry ? 1 : 0
-  source = "../../../../iaac/terraform/common/aws-telemetry"
+  count       = var.enable_aws_telemetry ? 1 : 0
+  source      = "../../../../iaac/terraform/common/aws-telemetry"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/aws-telemetry"
   }
@@ -401,14 +403,14 @@ module "kubeflow_aws_telemetry" {
 }
 
 module "filter_kubeflow_user_namespace_set_values" {
-  source = "../../../../iaac/terraform/utils/set-values-filter"
+  source     = "../../../../iaac/terraform/utils/set-values-filter"
   set_values = {
     "awsIamForServiceAccount.awsIamRole" = try(data.aws_iam_role.user_namespace_irsa_iam_role[0].arn, null)
   }
 }
 
 module "kubeflow_user_namespace" {
-  source = "../../../../iaac/terraform/common/user-namespace"
+  source      = "../../../../iaac/terraform/common/user-namespace"
   helm_config = {
     chart = "${var.kf_helm_repo_path}/charts/common/user-namespace",
     set   = module.filter_kubeflow_user_namespace_set_values.set_values
