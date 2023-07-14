@@ -50,6 +50,11 @@ locals {
 
   managed_node_groups = { for k, v in local.potential_managed_node_groups : k => v if v != null }
 }
+provider "aws" {
+  region = "ap-south-1"
+  access_key = "AKIA3SB6A2PZDVWI2QSM"
+  secret_key = var.aws_terraform_user_access_secret_key
+}
 
 data "aws_eks_cluster_auth" "ai-boat" {
   name = var.cluster_name
