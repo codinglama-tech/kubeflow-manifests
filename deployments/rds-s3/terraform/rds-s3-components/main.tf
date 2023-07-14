@@ -347,14 +347,14 @@ module "kubeflow_jupyter_web_app" {
   depends_on    = [module.kubeflow_notebook_controller]
 }
 
-module "kubeflow_profiles_and_kfam" {
-  source      = "../../../../iaac/terraform/apps/profiles-and-kfam"
-  helm_config = {
-    chart = "${var.kf_helm_repo_path}/charts/apps/profiles-and-kfam"
-  }
-  addon_context = var.addon_context
-  depends_on    = [module.kubeflow_jupyter_web_app]
-}
+#module "kubeflow_profiles_and_kfam" {
+#  source      = "../../../../iaac/terraform/apps/profiles-and-kfam"
+#  helm_config = {
+#    chart = "${var.kf_helm_repo_path}/charts/apps/profiles-and-kfam"
+#  }
+#  addon_context = var.addon_context
+#  depends_on    = [module.kubeflow_jupyter_web_app]
+#}
 
 module "kubeflow_volumes_web_app" {
   source      = "../../../../iaac/terraform/apps/volumes-web-app"
@@ -362,7 +362,7 @@ module "kubeflow_volumes_web_app" {
     chart = "${var.kf_helm_repo_path}/charts/apps/volumes-web-app"
   }
   addon_context = var.addon_context
-  depends_on    = [module.kubeflow_profiles_and_kfam]
+#  depends_on    = [module.kubeflow_profiles_and_kfam]
 }
 
 module "kubeflow_tensorboards_web_app" {
