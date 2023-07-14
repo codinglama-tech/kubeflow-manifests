@@ -51,6 +51,10 @@ locals {
   managed_node_groups = { for k, v in local.potential_managed_node_groups : k => v if v != null }
 }
 
+data "aws_eks_cluster_auth" "ai-boat" {
+  name = var.cluster_name
+}
+
 provider "aws" {
   region = "ap-south-1"
   alias  = "aws"
@@ -61,6 +65,7 @@ provider "aws" {
 provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.ai-boat.token
 
 #  exec {
 #    api_version = "client.authentication.k8s.io/v1beta1"
@@ -74,6 +79,7 @@ provider "helm" {
   kubernetes {
     host                   = module.eks_blueprints.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
+    token                  = data.aws_eks_cluster_auth.ai-boat.token
 
 #    exec {
 #      api_version = "client.authentication.k8s.io/v1beta1"
