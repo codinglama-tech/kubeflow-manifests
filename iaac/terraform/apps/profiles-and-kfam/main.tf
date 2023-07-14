@@ -19,7 +19,7 @@ module "irsa" {
 }
 
 module "helm_addon" {
-  source        = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons/helm-addon?ref=v4.31.0"
+  source        = "github.com/codinglama-tech/terraform-aws-eks-blueprints//modules/kubernetes-addons/helm-addon?ref=fix-aws-auth-dep-nodegroup"
   helm_config   = local.helm_config
   addon_context = var.addon_context
 }
