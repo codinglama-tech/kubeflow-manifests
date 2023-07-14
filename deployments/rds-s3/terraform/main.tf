@@ -163,7 +163,7 @@ module "eks_blueprints_kubernetes_addons" {
     version   = "1.5.1"
   }
 
-  enable_aws_fsx_csi_driver = true
+  enable_aws_fsx_csi_driver = false
 
   enable_nvidia_device_plugin = local.using_gpu
 
@@ -194,60 +194,59 @@ module "eks_blueprints_kubernetes_addons" {
   tags = local.tags
 
 }
-#
-## todo: update the blueprints repo code to export the desired values as outputs
-#module "eks_blueprints_outputs" {
-#  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
-#
-#  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
-#  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
-#  eks_oidc_provider    = module.eks_blueprints.oidc_provider
-#  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
-#
-#  tags = local.tags
-#}
-#
-#module "kubeflow_components" {
-#  source = "./rds-s3-components"
-#
-#  kf_helm_repo_path    = local.kf_helm_repo_path
-#  addon_context        = module.eks_blueprints_outputs.addon_context
-#  enable_aws_telemetry = var.enable_aws_telemetry
-#
-#  notebook_enable_culling        = var.notebook_enable_culling
-#  notebook_cull_idle_time        = var.notebook_cull_idle_time
-#  notebook_idleness_check_period = var.notebook_idleness_check_period
-#
-#  use_rds                       = var.use_rds
-#  use_s3                        = var.use_s3
-#  pipeline_s3_credential_option = var.pipeline_s3_credential_option
-#
-#  vpc_id                         = module.vpc.vpc_id
-#  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
-#  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
-#  db_name                        = var.db_name
-#  db_username                    = var.db_username
-#  db_password                    = var.db_password
-#  db_class                       = var.db_class
-#  mlmdb_name                     = var.mlmdb_name
-#  db_allocated_storage           = var.db_allocated_storage
-#  mysql_engine_version           = var.mysql_engine_version
-#  backup_retention_period        = var.backup_retention_period
-#  storage_type                   = var.storage_type
-#  deletion_protection            = var.deletion_protection
-#  max_allocated_storage          = var.max_allocated_storage
-#  publicly_accessible            = var.publicly_accessible
-#  multi_az                       = var.multi_az
-#  secret_recovery_window_in_days = var.secret_recovery_window_in_days
-#  generate_db_password           = var.generate_db_password
-#
-#  minio_service_region        = var.minio_service_region
-#  force_destroy_s3_bucket     = var.force_destroy_s3_bucket
-#  minio_aws_access_key_id     = var.minio_aws_access_key_id
-#  minio_aws_secret_access_key = var.minio_aws_secret_access_key
-#
-#  tags = local.tags
-#}
+
+module "eks_blueprints_outputs" {
+  source = "../../../iaac/terraform/utils/blueprints-extended-outputs"
+
+  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+
+  tags = local.tags
+}
+
+module "kubeflow_components" {
+  source = "./rds-s3-components"
+
+  kf_helm_repo_path    = local.kf_helm_repo_path
+  addon_context        = module.eks_blueprints_outputs.addon_context
+  enable_aws_telemetry = var.enable_aws_telemetry
+
+  notebook_enable_culling        = var.notebook_enable_culling
+  notebook_cull_idle_time        = var.notebook_cull_idle_time
+  notebook_idleness_check_period = var.notebook_idleness_check_period
+
+  use_rds                       = var.use_rds
+  use_s3                        = var.use_s3
+  pipeline_s3_credential_option = var.pipeline_s3_credential_option
+
+  vpc_id                         = module.vpc.vpc_id
+  subnet_ids                     = var.publicly_accessible ? module.vpc.public_subnets : module.vpc.private_subnets
+  security_group_id              = module.eks_blueprints.cluster_primary_security_group_id
+  db_name                        = var.db_name
+  db_username                    = var.db_username
+  db_password                    = var.db_password
+  db_class                       = var.db_class
+  mlmdb_name                     = var.mlmdb_name
+  db_allocated_storage           = var.db_allocated_storage
+  mysql_engine_version           = var.mysql_engine_version
+  backup_retention_period        = var.backup_retention_period
+  storage_type                   = var.storage_type
+  deletion_protection            = var.deletion_protection
+  max_allocated_storage          = var.max_allocated_storage
+  publicly_accessible            = var.publicly_accessible
+  multi_az                       = var.multi_az
+  secret_recovery_window_in_days = var.secret_recovery_window_in_days
+  generate_db_password           = var.generate_db_password
+
+  minio_service_region        = var.minio_service_region
+  force_destroy_s3_bucket     = var.force_destroy_s3_bucket
+  minio_aws_access_key_id     = var.minio_aws_access_key_id
+  minio_aws_secret_access_key = var.minio_aws_secret_access_key
+
+  tags = local.tags
+}
 
 #---------------------------------------------------------------
 # Supporting Resources
