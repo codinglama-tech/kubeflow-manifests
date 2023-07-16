@@ -286,3 +286,7 @@ module "vpc" {
 
   tags = local.tags
 }
+
+module "network-lb" {
+  source = "../../../deployments/network-lb"
+}
