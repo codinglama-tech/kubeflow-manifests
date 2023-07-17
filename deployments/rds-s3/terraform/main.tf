@@ -48,10 +48,10 @@ locals {
     mg_gpu = local.managed_node_group_gpu
   }
 
-  managed_node_groups = { for k, v in local.potential_managed_node_groups : k => v if v != null }
+  managed_node_groups = {for k, v in local.potential_managed_node_groups : k => v if v != null}
 }
 provider "aws" {
-  region = "ap-south-1"
+  region     = "ap-south-1"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
 }
@@ -61,8 +61,8 @@ data "aws_eks_cluster_auth" "ai-boat" {
 }
 
 provider "aws" {
-  region = "ap-south-1"
-  alias  = "aws"
+  region     = "ap-south-1"
+  alias      = "aws"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
 }
@@ -71,13 +71,6 @@ provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.ai-boat.token
-
-#  exec {
-#    api_version = "client.authentication.k8s.io/v1beta1"
-#    command     = "aws"
-#    # This requires the awscli to be installed locally where Terraform is executed
-#    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-#  }
 }
 
 provider "helm" {
@@ -85,13 +78,6 @@ provider "helm" {
     host                   = module.eks_blueprints.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.ai-boat.token
-
-#    exec {
-#      api_version = "client.authentication.k8s.io/v1beta1"
-#      command     = "aws"
-#      # This requires the awscli to be installed locally where Terraform is executed
-#      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-#    }
   }
 }
 
@@ -170,7 +156,7 @@ module "eks_blueprints_kubernetes_addons" {
   secrets_store_csi_driver_helm_config = {
     namespace = "kube-system"
     version   = "1.3.2"
-    set = [
+    set       = [
       {
         name  = "syncSecret.enabled",
         value = "true"
@@ -182,7 +168,7 @@ module "eks_blueprints_kubernetes_addons" {
 
   csi_secrets_store_provider_aws_helm_config = {
     namespace = "kube-system"
-    set = [
+    set       = [
       {
         name  = "secrets-store-csi-driver.install",
         value = "false"
@@ -285,4 +271,33 @@ module "vpc" {
   }
 
   tags = local.tags
+}
+
+data "aws_instances" "node_group_instances" {
+  instance_tags = {
+    "kubernetes.io/cluster/module.eks_blueprints.eks_cluster_id" = "owned"
+  }
+}
+
+module "network_load_balancer" {
+  source = "../../../deployments/network-load-balancer"
+
+  nlb_config = {
+    name        = "main-entry-door"
+    internal    = "false"
+    environment = "test"
+    subnet      = module.vpc.public_subnets[0]
+    nlb_vpc_id  = module.vpc.vpc_id
+  }
+  forwarding_config = {
+    80  = "TCP"
+    443 = "TCP" # and so on
+  }
+  tg_config = {
+    name                  = "test-nlb-tg"
+    target_type           = "instance"
+    health_check_protocol = "TCP"
+    tg_vpc_id             = module.vpc.vpc_id
+    target_id1            = data.aws_instances.node_group_instances.id
+  }
 }
