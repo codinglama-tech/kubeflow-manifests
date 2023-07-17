@@ -48,10 +48,10 @@ locals {
     mg_gpu = local.managed_node_group_gpu
   }
 
-  managed_node_groups = { for k, v in local.potential_managed_node_groups : k => v if v != null }
+  managed_node_groups = {for k, v in local.potential_managed_node_groups : k => v if v != null}
 }
 provider "aws" {
-  region = "ap-south-1"
+  region     = "ap-south-1"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
 }
@@ -61,8 +61,8 @@ data "aws_eks_cluster_auth" "ai-boat" {
 }
 
 provider "aws" {
-  region = "ap-south-1"
-  alias  = "aws"
+  region     = "ap-south-1"
+  alias      = "aws"
   access_key = "AKIA3SB6A2PZDVWI2QSM"
   secret_key = var.aws_terraform_user_access_secret_key
 }
@@ -71,13 +71,6 @@ provider "kubernetes" {
   host                   = module.eks_blueprints.eks_cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.ai-boat.token
-
-#  exec {
-#    api_version = "client.authentication.k8s.io/v1beta1"
-#    command     = "aws"
-#    # This requires the awscli to be installed locally where Terraform is executed
-#    args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-#  }
 }
 
 provider "helm" {
@@ -85,13 +78,6 @@ provider "helm" {
     host                   = module.eks_blueprints.eks_cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks_blueprints.eks_cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.ai-boat.token
-
-#    exec {
-#      api_version = "client.authentication.k8s.io/v1beta1"
-#      command     = "aws"
-#      # This requires the awscli to be installed locally where Terraform is executed
-#      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
-#    }
   }
 }
 
@@ -170,7 +156,7 @@ module "eks_blueprints_kubernetes_addons" {
   secrets_store_csi_driver_helm_config = {
     namespace = "kube-system"
     version   = "1.3.2"
-    set = [
+    set       = [
       {
         name  = "syncSecret.enabled",
         value = "true"
@@ -182,7 +168,7 @@ module "eks_blueprints_kubernetes_addons" {
 
   csi_secrets_store_provider_aws_helm_config = {
     namespace = "kube-system"
-    set = [
+    set       = [
       {
         name  = "secrets-store-csi-driver.install",
         value = "false"
@@ -287,6 +273,85 @@ module "vpc" {
   tags = local.tags
 }
 
-module "network-lb" {
-  source = "../../../deployments/network-lb"
+data "aws_instances" "node_group_instances" {
+  instance_tags = {
+    "kubernetes.io/cluster/module.eks_blueprints.eks_cluster_id" = "owned"
+  }
+}
+
+# Network load balancer
+
+resource "aws_lb" "main-entry-door" {
+  name                       = "main-entry-door"
+  load_balancer_type         = "network"
+  subnets                    = [lookup(var.nlb_config, "subnet")]
+  enable_deletion_protection = false
+  ip_address_type            = "ipv4"
+
+}
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_lb.main-entry-door.arn
+  for_each          = var.forwarding_config
+  port              = each.key
+  protocol          = each.value
+  default_action {
+    target_group_arn = "${aws_lb_target_group.tg[each.key].arn}"
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_target_group" "tg" {
+  for_each             = var.forwarding_config
+  name                 = "${lookup(var.nlb_config, "environment")}-tg-${lookup(var.tg_config, "name")}-${each.key}"
+  port                 = each.key
+  protocol             = each.value
+  vpc_id               = lookup(var.tg_config, "tg_vpc_id")
+  target_type          = lookup(var.tg_config, "target_type")
+  deregistration_delay = 90
+  health_check {
+    interval            = 60
+    port                = each.value != "TCP_UDP" ? each.key : 80
+    protocol            = "TCP"
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group_attachment" "tga1" {
+  for_each         = var.forwarding_config
+  target_group_arn = "${aws_lb_target_group.tg[each.key].arn}"
+  port             = each.key
+  target_id        = lookup(var.tg_config, "target_id1")
+}
+
+# variables for network load balancer
+
+variable "nlb_config" {
+  default = {
+    name        = "main-entry-door"
+    internal    = "false"
+    environment = "test"
+    #    subnet      = "subnet-0ccd55e85904b3ea1"
+    #    nlb_vpc_id  = "vpc-026aaa3e32a5b483c"
+    subnet      = module.vpc.public_subnets[0]
+    nlb_vpc_id  = module.vpc.vpc_id
+  }
+}
+
+variable "forwarding_config" {
+  default = {
+    80  = "TCP"
+    443 = "TCP" # and so on
+  }
+}
+
+variable "tg_config" {
+  default = {
+    name                  = "test-nlb-tg"
+    target_type           = "instance"
+    health_check_protocol = "TCP"
+    tg_vpc_id             = module.vpc.vpc_id
+    target_id1            = data.aws_instances.node_group_instances[0].id
+  }
 }
