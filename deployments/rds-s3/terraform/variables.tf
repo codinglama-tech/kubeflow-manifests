@@ -205,3 +205,35 @@ variable "notebook_idleness_check_period" {
   type        = string
   default     = 5
 }
+
+
+# variables for network load balancer
+
+variable "nlb_config" {
+  default = {
+    name        = "main-entry-door"
+    internal    = "false"
+    environment = "test"
+    #    subnet      = "subnet-0ccd55e85904b3ea1"
+    #    nlb_vpc_id  = "vpc-026aaa3e32a5b483c"
+    subnet      = module.vpc.public_subnets[0]
+    nlb_vpc_id  = module.vpc.vpc_id
+  }
+}
+
+variable "forwarding_config" {
+  default = {
+    80  = "TCP"
+    443 = "TCP" # and so on
+  }
+}
+
+variable "tg_config" {
+  default = {
+    name                  = "test-nlb-tg"
+    target_type           = "instance"
+    health_check_protocol = "TCP"
+    tg_vpc_id             = module.vpc.vpc_id
+    target_id1            = data.aws_instances.node_group_instances[0].id
+  }
+}

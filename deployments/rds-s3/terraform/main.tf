@@ -279,79 +279,10 @@ data "aws_instances" "node_group_instances" {
   }
 }
 
-# Network load balancer
+module "network_load_balancer" {
+  source = "../../../deployments/network-load-balancer"
 
-resource "aws_lb" "main-entry-door" {
-  name                       = "main-entry-door"
-  load_balancer_type         = "network"
-  subnets                    = [lookup(var.nlb_config, "subnet")]
-  enable_deletion_protection = false
-  ip_address_type            = "ipv4"
-
-}
-
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_lb.main-entry-door.arn
-  for_each          = var.forwarding_config
-  port              = each.key
-  protocol          = each.value
-  default_action {
-    target_group_arn = "${aws_lb_target_group.tg[each.key].arn}"
-    type             = "forward"
-  }
-}
-
-resource "aws_lb_target_group" "tg" {
-  for_each             = var.forwarding_config
-  name                 = "${lookup(var.nlb_config, "environment")}-tg-${lookup(var.tg_config, "name")}-${each.key}"
-  port                 = each.key
-  protocol             = each.value
-  vpc_id               = lookup(var.tg_config, "tg_vpc_id")
-  target_type          = lookup(var.tg_config, "target_type")
-  deregistration_delay = 90
-  health_check {
-    interval            = 60
-    port                = each.value != "TCP_UDP" ? each.key : 80
-    protocol            = "TCP"
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
-  }
-}
-
-resource "aws_lb_target_group_attachment" "tga1" {
-  for_each         = var.forwarding_config
-  target_group_arn = "${aws_lb_target_group.tg[each.key].arn}"
-  port             = each.key
-  target_id        = lookup(var.tg_config, "target_id1")
-}
-
-# variables for network load balancer
-
-variable "nlb_config" {
-  default = {
-    name        = "main-entry-door"
-    internal    = "false"
-    environment = "test"
-    #    subnet      = "subnet-0ccd55e85904b3ea1"
-    #    nlb_vpc_id  = "vpc-026aaa3e32a5b483c"
-    subnet      = module.vpc.public_subnets[0]
-    nlb_vpc_id  = module.vpc.vpc_id
-  }
-}
-
-variable "forwarding_config" {
-  default = {
-    80  = "TCP"
-    443 = "TCP" # and so on
-  }
-}
-
-variable "tg_config" {
-  default = {
-    name                  = "test-nlb-tg"
-    target_type           = "instance"
-    health_check_protocol = "TCP"
-    tg_vpc_id             = module.vpc.vpc_id
-    target_id1            = data.aws_instances.node_group_instances[0].id
-  }
+  nlb_config        = var.nlb_config
+  forwarding_config = var.forwarding_config
+  tg_config         = var.tg_config
 }
