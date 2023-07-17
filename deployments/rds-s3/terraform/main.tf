@@ -298,6 +298,6 @@ module "network_load_balancer" {
     target_type           = "instance"
     health_check_protocol = "TCP"
     tg_vpc_id             = module.vpc.vpc_id
-    target_id1            = data.aws_instances.node_group_instances[0].id
+    target_id1            = data.aws_instances.node_group_instances.id
   }
 }
